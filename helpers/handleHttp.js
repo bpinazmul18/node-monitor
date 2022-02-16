@@ -10,6 +10,10 @@
 const url  = require('url')
 const { StringDecoder } = require('string_decoder')
 
+const routes = require('../routes')
+const { notFound } = require('../handlers/notFound')
+
+
 // handleHttp object - module scaffolding
 let httpHandler = {}
 
@@ -27,6 +31,33 @@ httpHandler.handleHttp = (req, res) => {
     // Headers
     const headersObjects = req.headers
 
+    // Request properties
+    const reqProps = {
+        parsedUrl,
+        path,
+        trimPath,
+        method,
+        queryStringObject,
+        headersObjects
+    }
+
+
+    // Chosen handler
+    const chosenHandler = routes[trimPath] ? routes[trimPath] : notFound
+
+    chosenHandler(reqProps, (statusCode, payload)=> {
+        // check to validated
+        statusCode = typeof statusCode === 'number' ? statusCode : 500
+        payload    = typeof payload === 'object' ? payload : {}
+
+        // convert to json
+        const payloadStr = JSON.stringify(payload)
+
+        // return the final response
+        res.writeHead(statusCode)
+        res.end(payloadStr)
+    })
+
     // Decode data
     const decoder = new StringDecoder('utf-8')
     let originalData = ''
@@ -37,8 +68,8 @@ httpHandler.handleHttp = (req, res) => {
 
     req.on('end', () => {
         originalData += decoder.end()
-        console.log('real data...', originalData)
-        res.end('Hello world')
+        // console.log('real data...', originalData)
+        res.end(originalData)
     })
 }
 
