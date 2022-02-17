@@ -12,7 +12,7 @@
 const handler = {}
 
 handler.notFound = (reqProps, callback) => {
-    console.log('testing for notFound handler...')
+    // console.log('testing for notFound handler...')
     callback(404, {
         id: new Date().toLocaleString(),
         name: 'Nazmul',
