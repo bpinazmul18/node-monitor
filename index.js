@@ -29,8 +29,13 @@ const port = config.get('port')
 // })
 
 // Update data
-data.update('test', 'newFile', {'name': 'Nazmul', age: 22}, (err) => {
-     console.log('check events fired...', err)
+// data.update('test', 'newFile', {'name': 'Nazmul', age: 22}, (err) => {
+//      console.log('check events fired...', err)
+// })
+
+// Delete data
+data.delete('test', 'newFile', (err) => {
+     console.log(err)
 })
 
 
