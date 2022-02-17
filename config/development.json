@@ -1,3 +1,5 @@
 {
-  "name": "node-monitor --Development"
+  "name": "node-monitor --Development",
+  "port": 2000,
+  "envName": "env"
 }

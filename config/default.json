@@ -1,3 +1,5 @@
 {
-  "name": "node-monitor --Default"
+  "name": "node-monitor --Default",
+  "port": 9000,
+  "envName": "default"
 }

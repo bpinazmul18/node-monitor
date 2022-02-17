@@ -1,3 +1,5 @@
 {
-  "name": "node-monitor --Production"
+  "name": "node-monitor --Production",
+  "port": 3000,
+  "envName": "prod"
 }

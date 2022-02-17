@@ -45,19 +45,6 @@ httpHandler.handleHttp = (req, res) => {
     // Chosen handler
     const chosenHandler = routes[trimPath] ? routes[trimPath] : notFound
 
-    chosenHandler(reqProps, (statusCode, payload)=> {
-        // check to validated
-        statusCode = typeof statusCode === 'number' ? statusCode : 500
-        payload    = typeof payload === 'object' ? payload : {}
-
-        // convert to json
-        const payloadStr = JSON.stringify(payload)
-
-        // return the final response
-        res.writeHead(statusCode)
-        res.end(payloadStr)
-    })
-
     // Decode data
     const decoder = new StringDecoder('utf-8')
     let originalData = ''
@@ -69,6 +56,20 @@ httpHandler.handleHttp = (req, res) => {
     req.on('end', () => {
         originalData += decoder.end()
         // console.log('real data...', originalData)
+
+        chosenHandler(reqProps, (statusCode, payload)=> {
+            // check to validated
+            statusCode = typeof statusCode === 'number' ? statusCode : 500
+            payload    = typeof payload === 'object' ? payload : {}
+
+            // convert to json
+            const payloadStr = JSON.stringify(payload)
+
+            // return the final response
+            res.writeHead(statusCode)
+            res.end(payloadStr)
+        })
+
         res.end(originalData)
     })
 }
