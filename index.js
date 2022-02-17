@@ -18,8 +18,14 @@ let app = {}
 // Setup port
 const port = config.get('port')
 
-data.create('test', 'newFile', {'name': 'Nazmul', age: 21}, (err) => {
-     console.log('check events fired...', err)
+// Create data
+// data.create('test', 'newFile', {'name': 'Nazmul', age: 21}, (err) => {
+//      console.log('check events fired...', err)
+// })
+
+// Read data
+data.read('test', 'newFile', (err, data) => {
+     console.log(err, data)
 })
 
 // Create server
