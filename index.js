@@ -10,6 +10,7 @@
 const config = require('config')
 const http = require('http')
 const httpHandler = require('./helpers/handleHttp')
+const data = require('./lib/data')
 
 // App object - module scaffolding
 let app = {}
@@ -17,10 +18,9 @@ let app = {}
 // Setup port
 const port = config.get('port')
 
-// Configuration
-// app.config = {
-//      port: process.env.PORT || 9000,
-// }
+data.create('test', 'newFile', {'name': 'Nazmul', age: 21}, (err) => {
+     console.log('check events fired...', err)
+})
 
 // Create server
 app.createServer = () => {
