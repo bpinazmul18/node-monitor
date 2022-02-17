@@ -12,9 +12,10 @@
 const handler = {}
 
 handler.sampleHandler = (reqProps, callback) => {
-    console.log('testing for sample handler...')
+    // console.log('testing for sample handler...')
+    let uiId = 1
     callback(200, {
-        id: new Date().toLocaleString(),
+        id: ++uiId,
         name: 'Nazmul',
         description: 'This is a sample url',
         message: 'How are you?'

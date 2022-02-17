@@ -55,9 +55,12 @@ httpHandler.handleHttp = (req, res) => {
 
     req.on('end', () => {
         originalData += decoder.end()
-        // console.log('real data...', originalData)
+        console.log('real data...', originalData)
 
         chosenHandler(reqProps, (statusCode, payload)=> {
+            console.log('check reqProps...', reqProps)
+            console.log('check reqProps...', statusCode)
+            console.log('check reqProps...', payload)
             // check to validated
             statusCode = typeof statusCode === 'number' ? statusCode : 500
             payload    = typeof payload === 'object' ? payload : {}
@@ -66,11 +69,13 @@ httpHandler.handleHttp = (req, res) => {
             const payloadStr = JSON.stringify(payload)
 
             // return the final response
+            // res.writeHead(statusCode, { 'Content-Type': 'application/json' })
+            res.setHeader('Content-Type', 'application/json')
             res.writeHead(statusCode)
             res.end(payloadStr)
         })
 
-        res.end(originalData)
+        // res.end(originalData)
     })
 }
 

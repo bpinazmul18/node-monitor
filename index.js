@@ -34,9 +34,9 @@ const port = config.get('port')
 // })
 
 // Delete data
-data.delete('test', 'newFile', (err) => {
-     console.log(err)
-})
+// data.delete('test', 'newFile', (err) => {
+//      console.log(err)
+// })
 
 
 // Create server
