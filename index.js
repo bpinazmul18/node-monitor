@@ -24,9 +24,15 @@ const port = config.get('port')
 // })
 
 // Read data
-data.read('test', 'newFile', (err, data) => {
-     console.log(err, data)
+// data.read('test', 'newFile', (err, data) => {
+//      console.log(err, data)
+// })
+
+// Update data
+data.update('test', 'newFile', {'name': 'Nazmul', age: 22}, (err) => {
+     console.log('check events fired...', err)
 })
+
 
 // Create server
 app.createServer = () => {
