@@ -49,15 +49,17 @@ httpHandler.handleHttp = (req, res) => {
 
     // Decode data
     const decoder = new StringDecoder('utf-8')
+    // console.log('checking...', decoder)
     let originalData = ''
 
     req.on('data', (buffer) => {
         originalData += decoder.write(buffer)
+        // console.log('checking...', originalData)
     })
 
     req.on('end', () => {
         originalData += decoder.end()
-        originalData.body = parseJSON(originalData)
+        reqProps.body = parseJSON(originalData)
         // console.log('real data...', originalData)
 
         chosenHandler(reqProps, (statusCode, payload)=> {

@@ -1,5 +1,6 @@
 {
   "name": "node-monitor --Default",
   "port": 9000,
-  "envName": "default"
+  "envName": "default",
+  "secreteKey": "password"
 }

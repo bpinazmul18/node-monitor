@@ -1,5 +1,6 @@
 {
   "name": "node-monitor --Production",
   "port": 3000,
-  "envName": "prod"
+  "envName": "prod",
+  "secreteKey": "password"
 }

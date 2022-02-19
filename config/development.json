@@ -1,5 +1,6 @@
 {
   "name": "node-monitor --Development",
   "port": 2000,
-  "envName": "env"
+  "envName": "env",
+  "secreteKey": "password"
 }

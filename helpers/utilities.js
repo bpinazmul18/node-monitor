@@ -7,7 +7,8 @@
 * */
 
 // Dependencies
-
+const crypto = require('crypto')
+const config = require('config')
 
 // Utilities object - module scaffolding
 let utilities = {}
@@ -22,6 +23,16 @@ utilities.parseJSON = (jsonStr) => {
     }
 
     return parseResult
+}
+
+utilities.hash = (str) => {
+    if (typeof (str) === 'string' && str.length > 0) {
+        return crypto.createHmac('sha256', config.get('secreteKey'))
+                .update(str)
+                .digest('hex');
+    } else {
+        return false
+    }
 }
 
 
