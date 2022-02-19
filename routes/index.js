@@ -8,11 +8,13 @@
 
 // Dependencies
 const { sampleHandler } = require('../handlers/sample')
+const { userHandler } = require('../handlers/user')
 // const { notFound } = require('../handlers/notFound')
 
 // App object - module scaffolding
 let routes = {
     sample: sampleHandler,
+    user: userHandler,
     // notFound: notFound()
 }
 

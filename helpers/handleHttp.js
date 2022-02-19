@@ -44,6 +44,7 @@ httpHandler.handleHttp = (req, res) => {
 
     // Chosen handler
     const chosenHandler = routes[trimPath] ? routes[trimPath] : notFound
+    // console.log(chosenHandler())
 
     // Decode data
     const decoder = new StringDecoder('utf-8')
