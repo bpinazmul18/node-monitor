@@ -12,6 +12,7 @@ const { StringDecoder } = require('string_decoder')
 
 const routes = require('../routes')
 const { notFound } = require('../handlers/notFound')
+const {parseJSON} = require('../helpers/utilities')
 
 
 // handleHttp object - module scaffolding
@@ -56,6 +57,7 @@ httpHandler.handleHttp = (req, res) => {
 
     req.on('end', () => {
         originalData += decoder.end()
+        originalData.body = parseJSON(originalData)
         // console.log('real data...', originalData)
 
         chosenHandler(reqProps, (statusCode, payload)=> {

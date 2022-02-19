@@ -7,6 +7,7 @@
 * */
 
 // Dependencies
+const data = require('../lib/data')
 
 // App object - module scaffolding
 const handler = {}
@@ -36,7 +37,33 @@ handler.userHandler = (reqProps, callback) => {
 
 handler._users = {}
 handler._users.post = (reqProps, callback) => {
+    const firstName = typeof (reqProps.body.firstName) === 'string' && reqProps.body.firstName.trim().length > 0 ? reqProps.body.firstName : false
+    const lastName = typeof (reqProps.body.lastName) === 'string' && reqProps.body.lastName.trim().length > 0 ? reqProps.body.lastName : false
+    const phone = typeof (reqProps.body.phone) === 'string' && reqProps.body.phone.trim().length === 11 ? reqProps.body.phone : false
+    const password = typeof (reqProps.body.password) === 'string' && reqProps.body.password.trim().length === 11 ? reqProps.body.password : false
+    const tosAgreement = typeof (reqProps.body.tosAgreement) === 'boolean' && reqProps.body.tosAgreement.trim().length > 0 ? reqProps.body.tosAgreement : false
     console.log('check post...', reqProps)
+
+    if (firstName && lastName && phone && tosAgreement) {
+        data.read('users', phone, (err, user) => {
+            if (err) {
+                let userObj = {
+                    firstName,
+                    lastName,
+                    phone,
+
+                }
+            } else {
+                callback(500, {
+                    error: 'There was an error in server side!'
+                })
+            }
+        })
+    } else {
+        callback(400, {
+            error: 'You have problem in your request!'
+        })
+    }
 }
 handler._users.get = (reqProps, callback) => {}
 handler._users.put = (reqProps, callback) => {}

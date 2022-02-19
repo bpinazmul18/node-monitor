@@ -1,0 +1,29 @@
+/*
+*
+* Title: Utilities
+* Description: Handling request body when client create user.
+* Data: 19-02-2022
+*
+* */
+
+// Dependencies
+
+
+// Utilities object - module scaffolding
+let utilities = {}
+
+utilities.parseJSON = (jsonStr) => {
+    let parseResult;
+
+    try {
+        parseResult = JSON.parse(jsonStr)
+    } catch (ex) {
+        parseResult = {}
+    }
+
+    return parseResult
+}
+
+
+module.exports = utilities
+
