@@ -85,7 +85,7 @@ handler._users.post = (reqProps, callback) => {
 handler._users.get = (reqProps, callback) => {
     // Check phone number is valid
     // console.log(reqProps.queryStringObject)
-    const phone = typeof (reqProps.queryStringObject.phone) === 'string' && reqProps.queryStringObject.phone.trim().length === 11 ? reqProps.body.phone : false
+    const phone = typeof (reqProps.queryStringObject.phone) === 'string' && reqProps.queryStringObject.phone.trim().length === 11 ? reqProps.queryStringObject.phone : false
     // console.log('check phone number...', phone)
     if (phone) {
         // Lookup the user
@@ -160,6 +160,36 @@ handler._users.put = (reqProps, callback) => {
     }
 
 }
-handler._users.delete = (reqProps, callback) => {}
+handler._users.delete = (reqProps, callback) => {
+    // Check validity
+    const phone = typeof (reqProps.queryStringObject.phone) === 'string' && reqProps.queryStringObject.phone.trim().length === 11 ? reqProps.queryStringObject.phone : false
+
+    if (phone) {
+        data.read('users', phone, (err, userData) => {
+            if (!err && userData) {
+                data.delete('users', phone, (err) => {
+                    if (!err) {
+                        callback(200, {
+                            message: 'User was successfully delete!'
+                        })
+                    } else {
+                        callback(500, {
+                            error: 'There was an error in server side!'
+                        })
+                    }
+                })
+            } else {
+                callback(500, {
+                    error: 'There was an error in server side!'
+                })
+            }
+        })
+    } else {
+        callback(400, {
+            message: 'You have a problem in your request!'
+        })
+    }
+
+}
 
 module.exports = handler
