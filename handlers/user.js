@@ -16,7 +16,7 @@ const handler = {}
 
 handler.userHandler = (reqProps, callback) => {
     // console.log('testing for sample handler...')
-    const acceptedMethod = ['get', 'post', 'update', 'delete']
+    const acceptedMethod = ['get', 'post', 'put', 'delete']
     const reqMethod = acceptedMethod.indexOf(reqProps.method)
     // console.log(reqProps)
     // acceptedMethod.indexOf(reqProps.method)
@@ -109,7 +109,57 @@ handler._users.get = (reqProps, callback) => {
     }
 
 }
-handler._users.put = (reqProps, callback) => {}
+handler._users.put = (reqProps, callback) => {
+    // Check validity
+    const firstName = typeof (reqProps.body.firstName) === 'string' && reqProps.body.firstName.trim().length > 0 ? reqProps.body.firstName : false
+    const lastName = typeof (reqProps.body.lastName) === 'string' && reqProps.body.lastName.trim().length > 0 ? reqProps.body.lastName : false
+    const phone = typeof (reqProps.body.phone) === 'string' && reqProps.body.phone.trim().length === 11 ? reqProps.body.phone : false
+    const password = typeof (reqProps.body.password) === 'string' && reqProps.body.password.trim().length > 0 ? reqProps.body.password : false
+
+    if(phone) {
+        if (firstName || lastName || password) {
+            data.read('users', phone, (err, result) => {
+                const userData = {...parseJSON(result)}
+                if (!err && userData) {
+                    if (firstName) {
+                        userData.firstName = firstName
+                    }
+                    if (lastName) {
+                        userData.lastName = lastName
+                    }
+                    if (password) {
+                        userData.password = hash(password)
+                    }
+
+                    data.update('users', phone, userData, (err) => {
+                        if (!err) {
+                            callback(200, {
+                                message: 'User was successfully updated!'
+                            })
+                        } else {
+                            callback(500, {
+                                error: 'There was an error in server side!'
+                            })
+                        }
+                    })
+                } else {
+                    callback(400, {
+                        error: 'You have a problem in your request!'
+                    })
+                }
+            })
+        } else {
+            callback(400, {
+                error: 'You have a problem in your request!'
+            })
+        }
+    } else {
+        callback(400, {
+            error: 'Invalid phone number!'
+        })
+    }
+
+}
 handler._users.delete = (reqProps, callback) => {}
 
 module.exports = handler
