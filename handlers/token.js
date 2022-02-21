@@ -8,8 +8,8 @@
 
 // Dependencies
 const data = require('../lib/data')
-const { hash } = require('../helpers/utilities')
-const { parseJSON } = require('../helpers/utilities')
+const { hash, parseJSON} = require('../helpers/utilities')
+const { randStr } = require('../helpers/utilities')
 
 // App object - module scaffolding
 const handler = {}
@@ -39,8 +39,49 @@ handler.tokenHandler = (reqProps, callback) => {
 
 handler._token = {}
 handler._token.post = (reqProps, callback) => {
-    // console.log('check post...', reqProps)
-    // callback(200)
+    // Check validity
+    const phone = typeof (reqProps.body.phone) === 'string' && reqProps.body.phone.trim().length === 11 ? reqProps.body.phone : false
+    const password = typeof (reqProps.body.password) === 'string' && reqProps.body.password.trim().length > 0 ? reqProps.body.password : false
+
+    if(phone && password) {
+        data.read('users', phone, (err, result) => {
+            const userData = {...parseJSON(result)}
+            let hashPass = hash(password)
+            if (hashPass === userData.password) {
+                const tokenId = randStr(30)
+                // console.log('check tokenId...', tokenId)
+                const expiredTime = new Date() + 60 * 60 * 1000
+                const tokenObj = {
+                    tokenId,
+                    expiredTime,
+                    phone,
+                }
+
+                // Store token
+
+                data.create('tokens', tokenId, tokenObj, (err) => {
+                    // console.log('create error...', err)
+                    if(!err) {
+                        callback(200, {
+                            tokenObj
+                        })
+                    } else {
+                        callback(500, {
+                            error: 'There was a error in server!'
+                        })
+                    }
+                })
+            } else {
+                callback(400, {
+                    error: 'Password is not valid!'
+                })
+            }
+        })
+    } else {
+        callback(400, {
+            error: 'You have problem in your request!'
+        })
+    }
 
 }
 
