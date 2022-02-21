@@ -82,6 +82,10 @@ handler._users.post = (reqProps, callback) => {
         })
     }
 }
+
+/*
+* Authentication
+* */
 handler._users.get = (reqProps, callback) => {
     // Check phone number is valid
     // console.log(reqProps.queryStringObject)
@@ -109,6 +113,10 @@ handler._users.get = (reqProps, callback) => {
     }
 
 }
+
+/*
+* Authentication
+* */
 handler._users.put = (reqProps, callback) => {
     // Check validity
     const firstName = typeof (reqProps.body.firstName) === 'string' && reqProps.body.firstName.trim().length > 0 ? reqProps.body.firstName : false
@@ -160,6 +168,10 @@ handler._users.put = (reqProps, callback) => {
     }
 
 }
+
+/*
+* Authentication
+* */
 handler._users.delete = (reqProps, callback) => {
     // Check validity
     const phone = typeof (reqProps.queryStringObject.phone) === 'string' && reqProps.queryStringObject.phone.trim().length === 11 ? reqProps.queryStringObject.phone : false
