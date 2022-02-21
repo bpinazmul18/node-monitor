@@ -50,7 +50,8 @@ handler._token.post = (reqProps, callback) => {
             if (hashPass === userData.password) {
                 const tokenId = randStr(30)
                 // console.log('check tokenId...', tokenId)
-                const expiredTime = new Date() + 60 * 60 * 1000
+                const expiredTime = Date.now() + 60 * 60 * 1000
+                // console.log('check expired time...', expiredTime)
                 const tokenObj = {
                     tokenId,
                     expiredTime,
