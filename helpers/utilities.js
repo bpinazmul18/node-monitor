@@ -56,8 +56,8 @@ utilities.randStr = (strLen) => {
     if (len) {
         let genChar = ''
         const possibleChar = 'abcdefghijklmnopqrstuvwxyz1234567890'
-        for ( let i = 0; i < possibleChar.length; i++ ) {
-            genChar += possibleChar.charAt(Math.floor(Math.random() * possibleChar.length));
+        for ( let i = 0; i < len; i++ ) {
+            genChar += possibleChar.charAt(Math.floor(Math.random() * len));
         }
         return genChar
     }

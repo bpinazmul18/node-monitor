@@ -90,8 +90,27 @@ handler._token.post = (reqProps, callback) => {
 * Authentication
 * */
 handler._token.get = (reqProps, callback) => {
-    // Check phone number is valid
-    // console.log(reqProps.queryStringObject)
+    // Check id is valid
+    const id = typeof (reqProps.queryStringObject.id) === 'string' && reqProps.queryStringObject.id.trim().length === 30 ? reqProps.queryStringObject.id : false
+    // console.log('check id...', reqProps.queryStringObject.id.trim().length)
+    if (id) {
+        // Lookup the tokens
+        data.read('tokens', id, (err, result) => {
+            const tokens = {...parseJSON(result)}
+
+            if (!err && tokens) {
+                callback(200, tokens)
+            } else {
+                callback(404, {
+                    error: "Requested token was not found!"
+                })
+            }
+        })
+    } else {
+        callback(404, {
+            error: "Requested tokens was not found!"
+        })
+    }
 }
 
 /*
