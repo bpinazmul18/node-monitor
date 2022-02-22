@@ -118,6 +118,38 @@ handler._token.get = (reqProps, callback) => {
 * */
 handler._token.put = (reqProps, callback) => {
     // Check validity
+    const id = typeof (reqProps.body.id) === 'string' && reqProps.body.id.trim().length === 30 ? reqProps.body.id : false
+    const extend = typeof (reqProps.body.extend) === 'boolean' && reqProps.body.extend === true
+    // console.log(extend)
+    if (id && extend) {
+        data.read('tokens', id, (err, result) => {
+            const tokens = {...parseJSON(result)}
+            if (tokens.expiredTime > Date.now()) {
+                tokens.expiredTime = Date.now() + 60 * 60 * 1000
+
+                // Update token
+                data.update('tokens', id, tokens, (err) => {
+                    if (!err) {
+                        callback(200, {
+                            message: 'User was successfully updated!'
+                        })
+                    } else {
+                        callback(500, {
+                            error: 'There was an error in server side!'
+                        })
+                    }
+                })
+            } else {
+                callback(404, {
+                    error: 'Token already expired!'
+                })
+            }
+        })
+    } else {
+        callback(400, {
+            error: "There was a problem in your request!"
+        })
+    }
 }
 
 /*
