@@ -86,9 +86,6 @@ handler._token.post = (reqProps, callback) => {
 
 }
 
-/*
-* Authentication
-* */
 handler._token.get = (reqProps, callback) => {
     // Check id is valid
     const id = typeof (reqProps.queryStringObject.id) === 'string' && reqProps.queryStringObject.id.trim().length === 30 ? reqProps.queryStringObject.id : false
@@ -113,9 +110,6 @@ handler._token.get = (reqProps, callback) => {
     }
 }
 
-/*
-* Authentication
-* */
 handler._token.put = (reqProps, callback) => {
     // Check validity
     const id = typeof (reqProps.body.id) === 'string' && reqProps.body.id.trim().length === 30 ? reqProps.body.id : false
@@ -152,11 +146,36 @@ handler._token.put = (reqProps, callback) => {
     }
 }
 
-/*
-* Authentication
-* */
 handler._token.delete = (reqProps, callback) => {
     // Check validity
+    const id = typeof (reqProps.queryStringObject.id) === 'string' && reqProps.queryStringObject.id.trim().length === 30 ? reqProps.queryStringObject.id : false
+    console.log('check id...', id)
+
+    if (id) {
+        data.read('tokens', id, (err, tokensData) => {
+            if (!err && tokensData) {
+                data.delete('tokens', id, (err) => {
+                    if (!err) {
+                        callback(200, {
+                            message: 'User was successfully delete!'
+                        })
+                    } else {
+                        callback(500, {
+                            error: 'There was an error in server side!'
+                        })
+                    }
+                })
+            } else {
+                callback(500, {
+                    error: 'There was an error in server side!'
+                })
+            }
+        })
+    } else {
+        callback(400, {
+            message: 'You have a problem in your request!'
+        })
+    }
 }
 
 module.exports = handler
