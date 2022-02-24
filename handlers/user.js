@@ -10,6 +10,7 @@
 const data = require('../lib/data')
 const { hash } = require('../helpers/utilities')
 const { parseJSON } = require('../helpers/utilities')
+const { _token } = require('./token')
 
 // App object - module scaffolding
 const handler = {}
@@ -84,7 +85,7 @@ handler._users.post = (reqProps, callback) => {
 }
 
 /*
-* Authentication
+* @Authentication
 * */
 handler._users.get = (reqProps, callback) => {
     // Check phone number is valid
@@ -92,16 +93,27 @@ handler._users.get = (reqProps, callback) => {
     const phone = typeof (reqProps.queryStringObject.phone) === 'string' && reqProps.queryStringObject.phone.trim().length === 11 ? reqProps.queryStringObject.phone : false
     // console.log('check phone number...', phone)
     if (phone) {
+        // Get the token
+        const token = typeof(reqProps.headersObjects.token) === 'string' ? reqProps.headersObjects.token : false
+        
         // Lookup the user
-        data.read('users', phone, (err, result) => {
-            const user = {...parseJSON(result)}
-
-            if (!err && user) {
-                delete user.password
-                callback(200, user)
+        _token.verify(token, phone, (tokenId) => {
+            if (tokenId) {
+                data.read('users', phone, (err, result) => {
+                    const user = {...parseJSON(result)}
+        
+                    if (!err && user) {
+                        delete user.password
+                        callback(200, user)
+                    } else {
+                        callback(404, {
+                            error: "Requested user was not found!"
+                        })
+                    }
+                })
             } else {
-                callback(404, {
-                    error: "Requested user was not found!"
+                callback(401, {
+                    error: 'User not authorized!'
                 })
             }
         })
@@ -115,7 +127,7 @@ handler._users.get = (reqProps, callback) => {
 }
 
 /*
-* Authentication
+* @Authentication
 * */
 handler._users.put = (reqProps, callback) => {
     // Check validity
@@ -126,36 +138,49 @@ handler._users.put = (reqProps, callback) => {
 
     if(phone) {
         if (firstName || lastName || password) {
-            data.read('users', phone, (err, result) => {
-                const userData = {...parseJSON(result)}
-                if (!err && userData) {
-                    if (firstName) {
-                        userData.firstName = firstName
-                    }
-                    if (lastName) {
-                        userData.lastName = lastName
-                    }
-                    if (password) {
-                        userData.password = hash(password)
-                    }
 
-                    data.update('users', phone, userData, (err) => {
-                        if (!err) {
-                            callback(200, {
-                                message: 'User was successfully updated!'
-                            })
-                        } else {
-                            callback(500, {
-                                error: 'There was an error in server side!'
-                            })
+            // Get the token
+        const token = typeof(reqProps.headersObjects.token) === 'string' ? reqProps.headersObjects.token : false
+        
+        // Lookup the user
+        _token.verify(token, phone, (tokenId) => {
+            if (tokenId) {
+                data.read('users', phone, (err, result) => {
+                    const userData = {...parseJSON(result)}
+                    if (!err && userData) {
+                        if (firstName) {
+                            userData.firstName = firstName
                         }
-                    })
-                } else {
-                    callback(400, {
-                        error: 'You have a problem in your request!'
-                    })
-                }
-            })
+                        if (lastName) {
+                            userData.lastName = lastName
+                        }
+                        if (password) {
+                            userData.password = hash(password)
+                        }
+    
+                        data.update('users', phone, userData, (err) => {
+                            if (!err) {
+                                callback(200, {
+                                    message: 'User was successfully updated!'
+                                })
+                            } else {
+                                callback(500, {
+                                    error: 'There was an error in server side!'
+                                })
+                            }
+                        })
+                    } else {
+                        callback(400, {
+                            error: 'You have a problem in your request!'
+                        })
+                    }
+                })
+            } else {
+                callback(401, {
+                    error: 'User not authorized!'
+                })
+            }
+        })
         } else {
             callback(400, {
                 error: 'You have a problem in your request!'
@@ -170,19 +195,30 @@ handler._users.put = (reqProps, callback) => {
 }
 
 /*
-* Authentication
+* @Authentication
 * */
 handler._users.delete = (reqProps, callback) => {
     // Check validity
     const phone = typeof (reqProps.queryStringObject.phone) === 'string' && reqProps.queryStringObject.phone.trim().length === 11 ? reqProps.queryStringObject.phone : false
 
     if (phone) {
-        data.read('users', phone, (err, userData) => {
-            if (!err && userData) {
-                data.delete('users', phone, (err) => {
-                    if (!err) {
-                        callback(200, {
-                            message: 'User was successfully delete!'
+        // Get the token
+        const token = typeof(reqProps.headersObjects.token) === 'string' ? reqProps.headersObjects.token : false
+        // Lookup the user
+        _token.verify(token, phone, (tokenId) => {
+            if (tokenId) {
+                data.read('users', phone, (err, userData) => {
+                    if (!err && userData) {
+                        data.delete('users', phone, (err) => {
+                            if (!err) {
+                                callback(200, {
+                                    message: 'User was successfully delete!'
+                                })
+                            } else {
+                                callback(500, {
+                                    error: 'There was an error in server side!'
+                                })
+                            }
                         })
                     } else {
                         callback(500, {
@@ -191,8 +227,8 @@ handler._users.delete = (reqProps, callback) => {
                     }
                 })
             } else {
-                callback(500, {
-                    error: 'There was an error in server side!'
+                callback(401, {
+                    error: 'User not authorized!'
                 })
             }
         })
