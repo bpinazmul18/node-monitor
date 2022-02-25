@@ -82,8 +82,8 @@ handler._check.post = (reqProps, callback) => {
                                     data.create('checks', checkId, check, (err) => {
                                         if (!err) {
                                             // Add the check id to the users object
-                                            user.check = userChecks
-                                            user.check.push(checkId)
+                                            user.checks = userChecks
+                                            user.checks.push(checkId)
 
                                             // Save the new user data
                                             data.update('users', phone, user, (err) => {
@@ -248,6 +248,80 @@ handler._check.put = (reqProps, callback) => {
 
 }
 
-handler._check.delete = (reqProps, callback) => {}
+handler._check.delete = (reqProps, callback) => {
+    // Get id from queryString
+    const id = typeof reqProps.queryStringObject.id === 'string' && reqProps.queryStringObject.id.trim().length === 20 ? reqProps.queryStringObject.id : false
+
+    if (id) {
+        // Lookup the check
+        data.read('checks', id, (err, result) => {
+            // Parse JSON data
+            const checkData = parseJSON(result)
+            const phone = checkData.phone
+
+            if (!err && checkData) {
+                // Get token from header
+                const token = typeof(reqProps.headersObjects.token) === 'string' ? reqProps.headersObjects.token : false
+
+                // Check authenticate user
+                _token.verify(token, phone, (tokenIsValid) => {
+                    if (tokenIsValid) {
+                        // Delete the check data
+                        data.delete('checks', id, (err) => {
+                            if (!err) {
+                                // Lookup the user data
+                                data.read('users', phone, (err, result) => {
+                                    // Parse JSON data
+                                    const userData = parseJSON(result)
+                                    const checks = typeof(userData.checks) === 'object' && userData.checks instanceof Array ? userData.checks : []
+
+                                    // check position
+                                    const checkIndex = checks.indexOf(id)
+
+                                    if (checkIndex > -1) {
+                                        // Remove check
+                                        checks.splice(checkIndex, 1)
+
+                                        // Resave the user data
+                                        data.update('users', phone, userData, (err) => {
+                                            if (!err) {
+                                                callback(200, userData)
+                                            } else {
+                                                callback(500, {
+                                                    error: 'There was problem in server!'
+                                                })
+                                            }
+                                        })
+                                    } else {
+                                        callback(500, {
+                                            error: 'The checkId was not found in the user!'
+                                        })
+                                    }
+                                })
+                            } else {
+                                callback(500, {
+                                    error: 'There was problem in server!'
+                                })
+                            }
+                        })
+                        
+                    } else {
+                        callback(401, {
+                            error: 'User not authenticate!'
+                        })
+                    }
+                })
+            } else {
+                callback(404, {
+                    error: 'Not found!'
+                })
+            }
+        })
+    } else {
+        callback(400, {
+            error: 'You have problem in your request!'
+        })
+    }
+}
 
 module.exports = handler
