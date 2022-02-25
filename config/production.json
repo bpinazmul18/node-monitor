@@ -2,5 +2,6 @@
   "name": "node-monitor --Production",
   "port": 3000,
   "envName": "prod",
-  "secreteKey": "password"
+  "secreteKey": "password",
+  "maxChecks" : 5
 }

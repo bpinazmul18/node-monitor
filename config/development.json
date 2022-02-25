@@ -2,5 +2,6 @@
   "name": "node-monitor --Development",
   "port": 2000,
   "envName": "env",
-  "secreteKey": "password"
+  "secreteKey": "password",
+  "maxChecks" : 5
 }
