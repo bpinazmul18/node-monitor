@@ -179,7 +179,74 @@ handler._check.get = (reqProps, callback) => {
     }
 }
 
-handler._check.put = (reqProps, callback) => {}
+handler._check.put = (reqProps, callback) => {
+    // Get id to update user
+    const id = typeof(reqProps.body.id) === 'string' && reqProps.body.id.trim().length === 20 ? reqProps.body.id : false
+
+    // Input validation
+    const protocol = typeof(reqProps.body.protocol) === 'string' && ['http', 'https'].indexOf(reqProps.body.protocol) > -1 ? reqProps.body.protocol : false
+    const url = typeof(reqProps.body.url) === 'string' && reqProps.body.url.trim().length > 0 ? reqProps.body.url : false
+    const method = typeof(reqProps.body.method) === 'string' && ['post', 'get', 'put', 'delete'].indexOf(reqProps.body.method) > -1 ? reqProps.body.method : false
+    const statusCodes = typeof(reqProps.body.statusCodes) === 'object' && reqProps.body.statusCodes instanceof Array ? reqProps.body.statusCodes : false
+    const timeout = typeof(reqProps.body.timeout) === 'number' && reqProps.body.timeout % 1 === 0 && reqProps.body.timeout >= 1 && reqProps.body.timeout <= 5 ? reqProps.body.timeout : false
+
+    if (id) {
+        // Atleast one filed requiered to update check
+        if (protocol || url || method || statusCodes || timeout) {
+            // Lookup the checks
+            data.read('checks', id, (err, result) => {
+                const checkData = parseJSON(result)
+                const phone = checkData.phone
+                const token = typeof(reqProps.headersObjects.token) === 'string' ? reqProps.headersObjects.token : false
+
+                if (!err && result) {
+                    // Verify token
+
+                    _token.verify(token, phone, (tokenIsValid) => {
+                      if (tokenIsValid) {
+                          if (protocol) checkData.protocol = protocol
+                          if (url) checkData.url = url
+                          if (method) checkData.method = method
+                          if (statusCodes) checkData.statusCodes = statusCodes
+                          if (timeout) checkData.timeout = timeout
+
+                          // Update the check
+                            data.update('checks', id, checkData, (err) => {
+                                if (!err) {
+                                    callback(200, checkData)
+                                } else {
+                                    callback(500, {
+                                        error: 'There was a problem in server!'
+                                    })
+                                }
+                            })
+                      } else {
+                          callback(401, {
+                              error: 'Unauthorized user!'
+                          })
+                      }
+                    })
+                } else {
+                    callback(500, {
+                        error: 'There was a problem in server!'
+                    })
+                }
+            })
+        } else {
+            callback(400, {
+                error: 'Must provide at least one field to update!'
+            })
+        }
+
+    } else {
+        callback(400, {
+            error: 'You have problem in your request!'
+        })
+    }
+
+
+
+}
 
 handler._check.delete = (reqProps, callback) => {}
 
