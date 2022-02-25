@@ -141,7 +141,43 @@ handler._check.post = (reqProps, callback) => {
 
 }
 
-handler._check.get = (reqProps, callback) => {}
+handler._check.get = (reqProps, callback) => {
+    // Get id from queryString
+    const id = typeof reqProps.queryStringObject.id === 'string' && reqProps.queryStringObject.id.trim().length === 20 ? reqProps.queryStringObject.id : false
+
+    if (id) {
+        // Lookup the check
+        data.read('checks', id, (err, result) => {
+            // Parse JSON data
+            const checkData = parseJSON(result)
+            const phone = checkData.phone
+
+            if (!err && checkData) {
+                // Get token from header
+                const token = typeof(reqProps.headersObjects.token) === 'string' ? reqProps.headersObjects.token : false
+
+                // Check authenticate user
+                _token.verify(token, phone, (tokenIsValid) => {
+                    if (tokenIsValid) {
+                        callback(200, checkData)
+                    } else {
+                        callback(401, {
+                            error: 'User not authenticate!'
+                        })
+                    }
+                })
+            } else {
+                callback(404, {
+                    error: 'Not found!'
+                })
+            }
+        })
+    } else {
+        callback(400, {
+            error: 'You have problem in your request!'
+        })
+    }
+}
 
 handler._check.put = (reqProps, callback) => {}
 
