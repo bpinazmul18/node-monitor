@@ -3,5 +3,10 @@
   "port": 2000,
   "envName": "env",
   "secreteKey": "password",
-  "maxChecks" : 5
+  "maxChecks" : 5,
+  "twilio" : {
+    "from" : "twilio_phone",
+    "accountSID" : "account_sid",
+    "authToken" : "auth_token"
+  }
 }

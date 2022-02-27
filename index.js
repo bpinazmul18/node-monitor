@@ -11,6 +11,16 @@ const config = require('config')
 const http = require('http')
 const httpHandler = require('./helpers/handleHttp')
 const data = require('./lib/data')
+const { sendSms } = require('./helpers/notification')
+
+
+/*
+@Remove latter
+*/
+
+sendSms('01785362016', 'Hello world! by Nazu', (err) => {
+     console.log(`This is the error: ${err}`)
+})
 
 // App object - module scaffolding
 let app = {}
