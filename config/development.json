@@ -6,7 +6,7 @@
   "maxChecks" : 5,
   "twilio" : {
     "from" : "twilio_phone",
-    "accountSID" : "account_sid",
+    "accountSID" : "test",
     "authToken" : "auth_token"
   }
 }
