@@ -7,7 +7,7 @@
 * */
 
 // Dependencies
-const https  = require('https')
+const https = require('https')
 const querystring = require('querystring')
 const config = require('config')
 
@@ -22,50 +22,102 @@ notifications.sendSms = (_phone, _msg, callback) => {
 
     if (phone && userMsg) {
         // Configure the request payload
+        // const payload = {
+        //     from: config.get('twilio').from,
+        //     to: `+88${phone}`,
+        //     MessagingServiceSid: config.get('twilio').accountSID,
+        //     Body: userMsg
+        // }
+
         const payload = {
-            from: config.get('twilio').from,
             to: `+88${phone}`,
-            body: userMsg
+            MessagingServiceSid: config.get('twilio').accountSID,
+            Body: userMsg
         }
+
+        console.log('check payload...', payload)
 
         // Stringify the payload
-        const stringifyPayload = querystring.stringify(payload)
-        
-        console.log('check config...', config)
+        const stringifyPayload = querystring.stringify(payload);
 
-        // Request details
+        console.log('check stringifyPayload...', stringifyPayload)
+        console.log('Check accountSID: ', config.get('twilio').accountSID)
+        console.log('Check authToken: ', config.get('twilio').authToken)
+
+        // Configure the request details
         const reqDetails = {
-            hostname : 'api.twilio.com',
-            method : 'POST',
-            path : `/2010-04-01/Accounts/${config.get('twilio').accountSID}/Messages.json`,
-            auth : `${config.get('twilio').accountSID}:${config.get('twilio').authToken}`,
+            hostname: 'api.twilio.com',
+            method: 'POST',
+            path: `/2010-04-01/Accounts/${config.get('twilio').accountSID}}/Messages.json`,
+            auth: `${config.get('twilio').accountSID}:${config.get('twilio').authToken}`,
             headers: {
-                'Content-Type' : 'application/x-www-form-urlencoded'
-            }
-        }
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+        };
+
+        console.log('check reqDetails...', reqDetails)
+
 
         // Instantiate the request object
         const req = https.request(reqDetails, (res) => {
-            // Get the status code send the request
-            const status = res.statusCode
-
-            // Callback successfully if the request through
+            // Get the status of the sent request
+            const status = res.statusCode;
+            // Callback successfully if the request went through
             if (status === 200 || status === 201) {
-                callback(false)
+                callback(false);
             } else {
-                callback(`Status code returned was ${status}`)
+                callback(`Status code returned was ${status}`);
             }
-        })
+        });
+
+        req.on('error', (e) => {
+            callback(e);
+        });
+
+        req.write(stringifyPayload);
+        req.end();
+
+
+        
+        // Request details
+        // const reqDetails = {
+        //     hostname : 'api.twilio.com',
+        //     method : 'POST',
+        //     // path : `/2010-04-01/Accounts/${config.get('twilio').accountSID}/Messages.json`,
+        //     path : `/2010-04-01/Accounts/${config.get('twilio').accountSID}/Messages/MM800f449d0399ed014aae2bcc0cc2f2ec.json`,
+        //     auth : `${config.get('twilio').accountSID}:${config.get('twilio').authToken}`,
+        //     headers: {
+        //         'Content-Type': 'application/x-www-form-urlencoded',
+        //     },
+        //     // headers: {
+        //     //     'Content-Type' : 'application/x-www-form-urlencoded'
+        //     // }
+        // }
+
+        // console.log('check reqDetails...', reqDetails)
+
+        // Instantiate the request object
+        // const req = https.request(reqDetails, (res) => {
+        //     // Get the status code send the request
+        //     const status = res.statusCode
+            
+        //     // Callback successfully if the request through
+        //     if (status === 200 || status === 201) {
+        //         callback(false)
+        //     } else {
+        //         callback(`Status code returned was ${status}`)
+        //     }
+        // })
 
         // Handle error events
-        req.on('error', (err) => {
-            console.log('check error...', err)
-            callback(err)
-        })
+        // req.on('error', (err) => {
+        //     console.log('check error...', err)
+        //     callback(err)
+        // })
 
         // Send the payload
-        req.write(stringifyPayload)
-        req.end()
+        // req.write(stringifyPayload)
+        // req.end()
     } else {
         callback('Given parameters were missing or invalid!')
     }
