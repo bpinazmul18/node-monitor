@@ -1,63 +1,26 @@
 /*
 *
-* Title: Node Monitoring -app
-* Description: Monitor node to check up/down user provide links and notify user.
-* Data: 16-02-2022
+* Title: Project initial file
+* Description: Initial file to start the node server and workers.
+* Data: 28-02-2022
 *
 * */
 
 // Dependencies
-const config = require('config')
-const http = require('http')
-const httpHandler = require('./helpers/handleHttp')
-const data = require('./lib/data')
-const { sendSMS } = require('./helpers/notification')
-
-
-/*
-@Remove latter
-*/
-
-sendSMS('01785362016', 'Hello world! by Nazu', (err) => {
-     console.log(`This is the error: ${err}`)
-})
+const server = require('./lib/server')
+const worker = require('./lib/worker')
 
 // App object - module scaffolding
 let app = {}
 
-// Setup port
-const port = config.get('port')
+app.init = () => {
+     // Start the server
+     server.init()
 
-// Create data
-// data.create('test', 'newFile', {'name': 'Nazmul', age: 21}, (err) => {
-//      console.log('check events fired...', err)
-// })
-
-// Read data
-// data.read('test', 'newFile', (err, data) => {
-//      console.log(err, data)
-// })
-
-// Update data
-// data.update('test', 'newFile', {'name': 'Nazmul', age: 22}, (err) => {
-//      console.log('check events fired...', err)
-// })
-
-// Delete data
-// data.delete('test', 'newFile', (err) => {
-//      console.log(err)
-// })
-
-
-// Create server
-app.createServer = () => {
-     const server = http.createServer (httpHandler.handleHttp)
-
-     // Listen server
-     server.listen(port, () => {
-          console.log(`Server listing on port ${port}`)
-     })
+     // Start the worker
+     worker.init()
 }
 
-// Start the server
-app.createServer()
+app.init()
+
+module.exports = app
