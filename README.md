@@ -22,6 +22,23 @@ yarn install
 ```nodejs
 yarn start
 ```
+## Configure env:
+### create file config/development.json
+
+```json
+{
+    "name": "node-monitor --Development",
+    "port": 9000,
+    "envName": "default",
+    "secreteKey": "",
+    "maxChecks" : 5,
+    "twilio" : {
+      "from" : "twilio_number",
+      "accountSID" : "twilio_accountSID",
+      "authToken" : "twilio_authToken"
+    }
+  }
+```
 
 ## Contributing:
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
