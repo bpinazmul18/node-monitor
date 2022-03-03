@@ -9,6 +9,11 @@
 // Dependencies
 const server = require('./lib/server')
 const worker = require('./lib/worker')
+// const { sendSMS } = require ('./helpers/notification')
+
+// sendSMS('01768665824', 'Hello', (err) => {
+//      console.log('send sms...', err);
+// })
 
 // App object - module scaffolding
 let app = {}
